@@ -1,0 +1,5 @@
+pip
+pip
+pkg_resources
+setuptools
+setuptools
