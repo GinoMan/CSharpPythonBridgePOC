@@ -21,4 +21,4 @@ if DialogResult(result) == DialogResult.OK:
 	msgbox("Dialog Result", "OK Button was clicked!")
 
 # So far, I have obtained an Enum as a return value, I have called a static function, and I've passed strings to it.
-# So the next thing to do is to obtain 
+# So the next thing to do is to pass Enums to the function.
