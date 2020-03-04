@@ -4,7 +4,9 @@ This is a proof of concept of communicating between [C#.NET][1] and [Python 3.8]
 
 # What does it do? #
 
-The current version of the python script shows a dialog box with a custom title and text. The C# library merely wraps [Forms.MessageBox.Show()][3]. It then is able to interpret the result of the call as an enum and compare the Enum to the result in python to see what button was clicked by the user. The enum itself is fully implemented but the dialog code will always return ["DialogResult.OK"][4] unless you close it at which point you'll get a different value. It is intended for the [MessageBoxButtons][5] and [MessageBoxIcon][6] to be implemented in the next release (See [Roadmap](#roadmap)) so that they can be passed along to the msgbox function and different values of [DialogResult][4] will be possible. 
+The current version of the python script shows a dialog box with a custom title and text. The C# library merely wraps [Forms.MessageBox.Show()][3]. It then is able to interpret the result of the call as an enum and compare the Enum to the result in python to see what button was clicked by the user. 
+
+The enum itself is fully implemented but the dialog code will always return ["DialogResult.OK"][4] unless you close it at which point you'll get a different value. It is intended for the [MessageBoxButtons][5] and [MessageBoxIcon][6] to be implemented in the next release (See [Roadmap](#roadmap)) so that they can be passed along to the msgbox function and different values of [DialogResult][4] will be possible. 
 
 # Known Issues/Notes #
 
@@ -14,7 +16,13 @@ The wrapper reverses the order of the Text and Caption parameters of the underly
 
 # Concept #
 
-Conceptually, the way the project works is it exposes C# static methods using the [Conari][7] and [DllExport][8] libraries which can be found on nuget. The exposure makes the functions and data types available to any language that can load C Dlls and call functions from those Dlls. Python, through it's [CTypes][9] library is able to do this. So conceptually, it works like this: Python <-> (C/C++) <-> C#.NET. C/C++ is in parentheses because no direct C/C++ code need be written and at the time of this writing, there isn't any C/C++ code in the project. This same concept can eventually be used to wrap whole C#.NET libraries for use by CPython; potentially even GUI libraries like Windows Forms or WPF (Windows Presentation Foundation) without the need for [IronPython][10]. It may even facilitate the creation of a full blown Python GUI library for Windows. 
+Conceptually, the way the project works is it exposes C# static methods using the [Conari][7] and [DllExport][8] libraries which can be found on nuget. The exposure makes the functions and data types available to any language that can load C Dlls and call functions from those Dlls. Python, through it's [CTypes][9] library is able to do this. 
+
+So conceptually, it works like this: 
+
+> Python <-> (C/C++) <-> C#.NET. 
+
+C/C++ is in parentheses because no direct C/C++ code need be written and at the time of this writing, there isn't any C/C++ code in the project. This same concept can eventually be used to wrap whole C#.NET libraries for use by CPython; potentially even GUI libraries like Windows Forms or WPF (Windows Presentation Foundation) without the need for [IronPython][10]. It may even facilitate the creation of a full blown Python GUI library for Windows. 
 
 # Recommendation for Application #
 
@@ -32,7 +40,11 @@ I can potentially see some possible issues arising however. For whatever reason,
 
 # Motivation for this #
 
-I wanted to create a python script that allowed me to easily and in bulk fix missing and incorrect song information in the id3 tags of a massive music library on my phone which I sometimes use as an MP3 player. The problem is that when you connect your phone to a windows computer, it doesn't mount the device as a drive in Windows such that you can directly access it via a path. Instead, you have to use the [Media Transfer Protocol (MTP)][12] to communicate with the device. Annoying but whatever. The problem is that I wasn't finding any libraries for MTP on Windows specifically for Python. I could find one in nuget for C# that is fairly good and well documented, but not one for Python. I wanted to use the C# library but how do you do that from Python? I thought about using [IronPython][10] but it seems not to have been updated for a long time. This led me to ask if C# libraries can be exposed for use by C since Python can use C libraries using the CTypes standard lib. It was then that I found [Conari][7] and [DllExport][8]. From there I worked on creating this proof of concept just to see if it would work to allow Python to call C# code and pass data back and forth and it does. By expanding this proof of concept, I will be able to demonstrate and prototype the techniques I intend to use to write a wrapper for this library in Python and C#. 
+I wanted to create a python script that allowed me to easily and in bulk fix missing and incorrect song information in the id3 tags of a massive music library on my phone which I sometimes use as an MP3 player. The problem is that when you connect your phone to a windows computer, it doesn't mount the device as a drive in Windows such that you can directly access it via a path. Instead, you have to use the [Media Transfer Protocol (MTP)][12] to communicate with the device. Annoying but whatever. 
+
+The problem is that I wasn't finding any libraries for MTP on Windows specifically for Python. I could find one in nuget for C# that is fairly good and well documented, but not one for Python. I wanted to use the C# library but how do you do that from Python? I thought about using [IronPython][10] but it seems not to have been updated for a long time. 
+
+This led me to ask if C# libraries can be exposed for use by C since Python can use C libraries using the CTypes standard lib. It was then that I found [Conari][7] and [DllExport][8]. From there I worked on creating this proof of concept just to see if it would work to allow Python to call C# code and pass data back and forth and it does. By expanding this proof of concept, I will be able to demonstrate and prototype the techniques I intend to use to write a wrapper for this library in Python and C#. 
 
 # Types Guide #
 
@@ -45,7 +57,13 @@ Strings from Python are UTF-16 encoded, which means that every other byte of nor
 
 ## Enum ##
 
-Enums cannot be passed directly per-se. The reason for this is that they are a first class type as far as the CLI is concerned, and as far as Python is concerned, but not as far as C is concerned. C will automatically treat enums as ints in the generated assembly code and subsequent binary. The C Compiler checks that the value is only one of the defined values, but otherwise the underlying int could be any value that fits. The binary doesn't know the difference. Because of this, Enums should be returned as ints where the enum is casted to int in the return value and the return type of the exposed function is int. This may have Type Safety ramifications but Python being flexibly typed doesn't really care except in comparisons for some reason as mentioned in ["Recommendation for Application"](#recommendation-for-application). Pretty much any enum defined by .NET has documented numeric values that can directly be used in defining the enum in Python. If the enum returned or I suspect is passed with the same numeric value, then it means exactly the same in python as in C#. E.g. The [DialogResult][4] returned in the sample, will return the same numeric values that correspond to the .NET type. So by defining the [Enum][13] in Python with those same names and values, it can be compared to the result identically to how it would be compared in C#. It should be noted that the names need not be identical, but it is best practice to do so unless doing so is impossible (for example, if one of the identifiers is a keyword like "None").
+Enums cannot be passed directly per-se. The reason for this is that they are a first class type as far as the CLI is concerned, and as far as Python is concerned, but not as far as C is concerned. C will automatically treat enums as ints in the generated assembly code and subsequent binary. The C Compiler checks that the value is only one of the defined values, but otherwise the underlying int could be any value that fits. The binary doesn't know the difference. 
+
+Because of this, Enums should be returned as ints where the enum is casted to int in the return value and the return type of the exposed function is int. This may have Type Safety ramifications but Python being flexibly typed doesn't really care except in comparisons for some reason as mentioned in ["Recommendation for Application"](#recommendation-for-application). 
+
+Pretty much any enum defined by .NET has documented numeric values that can directly be used in defining the enum in Python. If the enum returned or I suspect is passed with the same numeric value, then it means exactly the same in python as in C#. E.g. The [DialogResult][4] returned in the sample, will return the same numeric values that correspond to the .NET type. So by defining the [Enum][13] in Python with those same names and values, it can be compared to the result identically to how it would be compared in C#. 
+
+It should be noted that the names need not be identical, but it is best practice to do so unless doing so is impossible (for example, if one of the identifiers is a keyword like "None").
 
 ## Int ##
 
