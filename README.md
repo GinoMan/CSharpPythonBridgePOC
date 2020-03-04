@@ -73,6 +73,10 @@ Thankfully Integers are marshalled exactly as they are. No extra processing is r
 
 The method that is being exported MUST be a public static method. Tagging the method with `[DllExport]` suffices in most cases to export the method for use by Python. However, certain types will have to be marshaled in some way. 
 
+# Special Thanks #
+
+Special thanks to @reflectronic on the C# discord for helping me with the marshaling of strings in C#.  
+
 [1]: <https://docs.microsoft.com/en-us/dotnet/csharp/> (C# Programming Language for the .NET Platform)
 [2]: <https://www.python.org/> (Python Programming Language - 2.8)
 [3]: <https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.messagebox.show?view=netframework-4.8> (Static Method of MessageBox class that displays an ad hoc message box)
