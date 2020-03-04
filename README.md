@@ -8,7 +8,7 @@ The current version of the python script shows a dialog box with a custom title 
 
 # Known Issues/Notes {#issues} #
 
-Only Strings, Ints, and Enums (as ints) are supported. Eventually the project will demonstrate marshalling of other types. See the ["Roadmap"][#roadmap] section for details.
+Only Strings, Ints, and Enums (as ints) are supported. Eventually the project will demonstrate marshalling of other types. See the ["Roadmap"](#roadmap) section for details.
 
 The wrapper reverses the order of the Text and Caption parameters of the underlying function since they're both as of now required and it seemed more intuitive.
 
