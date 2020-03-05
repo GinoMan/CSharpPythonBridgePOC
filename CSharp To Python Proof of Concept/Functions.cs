@@ -18,5 +18,23 @@ namespace CSharp_To_Python_Proof_of_Concept
 		{
 			return (int)MessageBox.Show(text, title, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
+
+		[DllExport]
+		public static bool getTrue()
+		{
+			return true;
+		}
+
+		[DllExport]
+		public static bool getFalse()
+		{
+			return false;
+		}
+
+		[DllExport]
+		public static IntPtr getText()
+		{
+			return new UnmanagedString("Hello World from C#", UnmanagedString.SType.Unicode);
+		}
     }
 }

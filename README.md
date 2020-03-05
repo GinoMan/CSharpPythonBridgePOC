@@ -4,7 +4,7 @@ This is a proof of concept of communicating between [C#.NET][1] and [Python 3.8]
 
 # What does it do? #
 
-The current version of the python script shows a dialog box with a custom title and text. The C# library merely wraps [Forms.MessageBox.Show()][3]. It then is able to interpret the result of the call as an enum and compare the Enum to the result in python to see what button was clicked by the user. 
+The current version of the python script shows a dialog box with a custom title and text. The C# library merely wraps [Forms.MessageBox.Show()][3]. It then is able to interpret the result of the call as an enum and compare the Enum to the result in python to see what button was clicked by the user. It also retrieves boolean values from C#, and passes and returns strings from C#. It displays them on the screen using the message box. 
 
 The enum itself is fully implemented but the dialog code will always return ["DialogResult.OK"][4] unless you close it at which point you'll get a different value. It is intended for the [MessageBoxButtons][5] and [MessageBoxIcon][6] to be implemented in the next release (See [Roadmap](#roadmap)) so that they can be passed along to the msgbox function and different values of [DialogResult][4] will be possible. 
 
@@ -13,6 +13,8 @@ The enum itself is fully implemented but the dialog code will always return ["Di
 Only Strings, Ints, and Enums (as ints) are supported. Eventually the project will demonstrate marshalling of other types. See the ["Roadmap"](#roadmap) section for details.
 
 The wrapper reverses the order of the Text and Caption parameters of the underlying function since they're both as of now required and it seemed more intuitive.
+
+This doesn't work with multi-platform binaries. You need to compile a x64 and x86 version of the C# DLL and load the correct one at runtime. 
 
 # Concept #
 
@@ -50,11 +52,13 @@ This led me to ask if C# libraries can be exposed for use by C since Python can 
 # Types Guide #
 
 ## WIP ## 
-This guide is a work in progress much like the rest of the concept, but the guide contains advice on how to wrap the types on the C# and Python sides.
+This guide is a work in progress much like the rest of the concept, but the guide contains advice/documentation on how to wrap the types on the C# and Python sides.
 
 ## String ##
 
-Strings from Python are UTF-16 encoded, which means that every other byte of normal ASCII text will be the null byte (`0x00`). This means that wrapped methods/functions that expect a null-terminated string will stop after the first character. To mitigate this, function parameters that expect a string can be tagged with the `[MarshalAs(UnmanagedType.LPWStr)]` attribute. Strings returned from methods/functions have not yet been tested in this PoC but will in the future. 
+Strings from Python are UTF-16 encoded, which means that every other byte of normal ASCII text will be the null byte (`0x00`). This means that wrapped methods/functions that expect a null-terminated string will stop after the first character. To mitigate this, function parameters that expect a string can be tagged with the `[MarshalAs(UnmanagedType.LPWStr)]` attribute. 
+
+To return a string from C# into Python, the C# method must return type `IntPtr`, but then return a Conari `UnmanagedString` of `UnmanagedString.SType.Unicode`. Also on the Python side, you will need to mark the imported function as returning a `c_wchar_p` by setting the appropriate `method.restype` (e.g. `lib.getText.restype = c_wchar_p`. This fully supports unicode. 
 
 ## Enum ##
 
@@ -74,9 +78,15 @@ Thankfully Integers are marshalled exactly as they are. No extra processing is r
 
 The method that is being exported MUST be a public static method. Tagging the method with `[DllExport]` suffices in most cases to export the method for use by Python. However, certain types will have to be marshaled in some way. 
 
+Further testing has revealed that C# functions named in such a way that is the same as an object builtin function (like __bool__ or __repr__) will not replace those functions. However, it can be done manually by giving them a different name and then wrapping it in a class in theory. 
+
+## Bool ##
+
+Booleans are marshalled completely transparently as well. Returning true from C# will evaluate to true in Python. Returning false from C# will evaluate to false in Python.
+
 # Special Thanks #
 
-Special thanks to @reflectronic on the C# discord for helping me with the marshaling of strings in C#.  
+Special thanks to @reflectronic on the C# discord for helping me with the marshaling of strings in C#. 
 
 [1]: <https://docs.microsoft.com/en-us/dotnet/csharp/> (C# Programming Language for the .NET Platform)
 [2]: <https://www.python.org/> (Python Programming Language - 2.8)
