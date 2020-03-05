@@ -5,8 +5,7 @@
     <ProjectGuid>98956942-f304-49c5-8b95-9ca8e232878e</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>PythonRunner.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>..\CSharp To Python Proof of Concept\bin\Debug</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>PythonRunner</Name>

@@ -1,11 +1,11 @@
-#!.venv/bin/python
+#!./.venv/bin/python
 
-from ctypes import cdll
+from ctypes import *
 from enum import Enum
 
 lib = cdll.LoadLibrary("./CSharp To Python Proof of Concept.dll")
 msgbox = lib.safeMessageBox
-result = msgbox("Hello!", "This is from Python through C#")
+result = msgbox("Hello!", "Hello From Python to C#!")
 
 class DialogResult(Enum):
     Abort = 3
@@ -19,6 +19,3 @@ class DialogResult(Enum):
 
 if DialogResult(result) == DialogResult.OK:
 	msgbox("Dialog Result", "OK Button was clicked!")
-
-# So far, I have obtained an Enum as a return value, I have called a static function, and I've passed strings to it.
-# So the next thing to do is to pass Enums to the function.

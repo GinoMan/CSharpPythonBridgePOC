@@ -37,6 +37,7 @@ I can potentially see some possible issues arising however. For whatever reason,
 3. Try to return a string to python.
 4. ???
 5. $Profit?
+6. Create project template for Python Accessible C# libraries
 
 # Motivation for this #
 

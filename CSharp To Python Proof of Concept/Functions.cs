@@ -8,6 +8,7 @@ using net.r_eg.DllExport;
 using net.r_eg.Conari.Types;
 using System.Runtime.InteropServices;
 
+
 namespace CSharp_To_Python_Proof_of_Concept
 {
 	public class Functions
