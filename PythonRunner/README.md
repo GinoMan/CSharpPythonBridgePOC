@@ -1,10 +1,10 @@
-# CSharpPythonBridgePOC - C# Library #
+# CSharpPythonBridgePOC - Python Code #
 
 This is a proof of concept of communicating between [C#.NET][2] and [Python 3.8][3] code by creating a DLL/DLLs that can then be called by Python code.
 
 # What does it do? #
 
-This implements the C# Library called by the Python code. See the main [README][1] for details.
+This is the Python script that consumes the Library code. Please see the main [README][1] for details.
 
 # Concept #
 
